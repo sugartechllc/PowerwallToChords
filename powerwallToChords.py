@@ -126,7 +126,7 @@ def main(config_file:dict)->None:
         if count == avg_count:
             averaged_values = pw_aggregator.avg()
             t = averaged_values['time']
-            at = str(datetime.datetime.fromtimestamp(t, zoneinfo.ZoneInfo(timezone)))
+            at = str(datetime.datetime.fromtimestamp(t, zoneinfo.ZoneInfo(timezone))).replace(' ','T')
             vars = {}
             vars['at'] = at
             vars['grid'] = averaged_values['grid']
