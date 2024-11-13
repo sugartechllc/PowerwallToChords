@@ -1,7 +1,11 @@
 {
-    "tesla": {
+    "powerwalltochords": {
         "owner_email": "owner@gmail.com",
-        "timezone": "America/Denver"
+        "timezone": "America/Denver",
+        "pw_auth_path": "~/",
+        "poll_secs": 6,
+        "avg_count": 11,
+        "debug": false
     },
     "chords": {
         "chords_host": "wx.myhost.com",
