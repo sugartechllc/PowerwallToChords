@@ -1,0 +1,12 @@
+{
+    "tesla": {
+        "owner_email": "owner@gmail.com",
+        "timezone": "America/Denver"
+    },
+    "chords": {
+        "chords_host": "wx.myhost.com",
+        "api_email": "myemail@gmail.com",
+        "api_key": "XXXXXXXXXXXXXXXXX",
+        "instrument_id": "12345"
+    }
+}
