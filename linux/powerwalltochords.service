@@ -9,7 +9,7 @@ Restart=always
 RestartSec=5
 Type=simple
 WorkingDirectory=/home/pi/RtlToChords
-ExecStart=/home/pi/py-3.11/bin/python /home/pi/PowerwallToChords/powerwallToChords.py -c /home/pi/powerwall.json --debug
+ExecStart=/home/pi/py-3.11/bin/python /home/pi/PowerwallToChords/powerwallToChords.py -c /home/pi/powerwall.json
 TimeoutStopFailureMode=kill
 TimeoutStopSec=30s
 
