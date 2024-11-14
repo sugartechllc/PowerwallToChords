@@ -34,9 +34,11 @@ class Aggregater:
     def avg(self)->list:
         avg = statistics.mean(self.values)
         time = statistics.mean(self.times)
-        while len(self.times) > 1:
-            self.values.pop()
-            self.times.pop()
+        #print(f'>>> {self.name}')
+        #print(self.values)
+        #print(avg)
+        self.values = [self.values[-1]]
+        self.times = [self.times[-1]]
         return Average(time=time, value=avg)
 
 class PW_Aggregator:
@@ -134,6 +136,7 @@ def main(config_file:dict)->None:
             vars['battery'] = averaged_values['battery']
             vars['load'] = averaged_values['load']
             vars['level'] = averaged_values['level']
+            #print(vars)
 
             chords_record = {}
             chords_record["inst_id"] = config['chords']["instrument_id"]
