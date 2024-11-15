@@ -11,11 +11,12 @@ import datetime
 import pychords.tochords as tochords
 
 
-class Average:
+class TimeAndValue:
+    '''Just a structure to hold a time and value pair.'''
     def __init__(self, time, value):
         self.time = time
         self.average = value
-class Aggregater: 
+class Aggregator: 
     '''Collect and average a queue of values
     
     When an average is called for, the average over all values 
@@ -39,22 +40,33 @@ class Aggregater:
         #print(avg)
         self.values = [self.values[-1]]
         self.times = [self.times[-1]]
-        return Average(time=time, value=avg)
+        return TimeAndValue(time=time, value=avg)
 
 class PW_Aggregator:
     def __init__(self, pw:pypowerwall.Powerwall):
         self.pw = pw
-        self.time_aggregator = Aggregater('time')
-        self.grid_aggregator = Aggregater('grid')
-        self.solar_aggregator = Aggregater('solar')
-        self.battery_aggregator = Aggregater('battery')
-        self.load_aggregator = Aggregater('load')
-        self.level_aggregator = Aggregater('level')
+        self.time_aggregator = Aggregator('time')
+        self.grid_aggregator = Aggregator('grid')
+        self.solar_aggregator = Aggregator('solar')
+        self.battery_aggregator = Aggregator('battery')
+        self.load_aggregator = Aggregator('load')
+        self.level_aggregator = Aggregator('level')
 
     def poll_pw(self):
-        time = datetime.datetime.fromisoformat(self.pw.grid(verbose=True)['last_communication_time']).timestamp()
+        pw_success = False
+        while not pw_success:
+            try:
+                # pw.grid() will make a request to Tesla
+                time = datetime.datetime.fromisoformat(self.pw.grid(verbose=True)['last_communication_time']).timestamp()
+                # pw.power() will make a request to Tesla
+                power = self.pw.power()
+                pw_success = True
+            except Exception as e:
+                print(e)
+                time.sleep(6)
+                print('Retrying Tesla access')
+
         self.time_aggregator.add(time=time, value=time)
-        power = self.pw.power()
         self.grid_aggregator.add(time=time, value=power['site'])
         self.solar_aggregator.add(time=time, value=power['solar'])
         self.battery_aggregator.add(time=time, value=power['battery'])
