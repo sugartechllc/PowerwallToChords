@@ -16,6 +16,7 @@ class TimeAndValue:
     def __init__(self, time, value):
         self.time = time
         self.average = value
+
 class Aggregator: 
     '''Collect and average a queue of values
     
@@ -43,8 +44,14 @@ class Aggregator:
         return TimeAndValue(time=time, value=avg)
 
 class PW_Aggregator:
+    '''Poll Tesla every time poll_pw() is called, and aggregate selected data.
+    
+    avg() returns the averaged values, which causes the Aggregator()s
+    to restart the averaging.
+    '''
     def __init__(self, pw:pypowerwall.Powerwall):
         self.pw = pw
+        
         self.time_aggregator = Aggregator('time')
         self.grid_aggregator = Aggregator('grid')
         self.solar_aggregator = Aggregator('solar')
@@ -53,28 +60,32 @@ class PW_Aggregator:
         self.level_aggregator = Aggregator('level')
 
     def poll_pw(self):
+        '''Poll Tesla and add data to the set of Aggregators'''
         pw_success = False
         while not pw_success:
             try:
                 # pw.grid() will make a request to Tesla
-                time = datetime.datetime.fromisoformat(self.pw.grid(verbose=True)['last_communication_time']).timestamp()
+                data_time = datetime.datetime.fromisoformat(self.pw.grid(verbose=True)['last_communication_time']).timestamp()
                 # pw.power() will make a request to Tesla
                 power = self.pw.power()
                 pw_success = True
             except Exception as e:
                 print(e)
-                time.sleep(6)
+                data_time.sleep(6)
                 print('Retrying Tesla access')
 
-        self.time_aggregator.add(time=time, value=time)
-        self.grid_aggregator.add(time=time, value=power['site'])
-        self.solar_aggregator.add(time=time, value=power['solar'])
-        self.battery_aggregator.add(time=time, value=power['battery'])
-        self.load_aggregator.add(time=time, value=power['load'])
-        self.level_aggregator.add(time=time, value=self.pw.level())
+        self.time_aggregator.add(time=data_time, value=data_time)
+        self.grid_aggregator.add(time=data_time, value=power['site'])
+        self.solar_aggregator.add(time=data_time, value=power['solar'])
+        self.battery_aggregator.add(time=data_time, value=power['battery'])
+        self.load_aggregator.add(time=data_time, value=power['load'])
+        self.level_aggregator.add(time=data_time, value=self.pw.level())
 
     def avg(self):
-        '''Return a dictionary of Average'''
+        '''Return a dictionary of TimeAndValue averages.
+        
+        The aggregators are restarted when their .avg() functions are called.
+        '''
         ret_val = {}
         ret_val['time'] = self.time_aggregator.avg().average
         ret_val['grid'] = self.grid_aggregator.avg().average
@@ -85,7 +96,7 @@ class PW_Aggregator:
         return ret_val
 
 def check_auth_files(pw_auth_path:str)->bool:
-    # If the authorization files can't be found, return false
+    # If the Tesla authorization files can't be found, return false
     ok = True
     auth_files = [f'{pw_auth_path}/.pypowerwall.auth', f'{pw_auth_path}/.pypowerwall.site']
     for f in auth_files:
