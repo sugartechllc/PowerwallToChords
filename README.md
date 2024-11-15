@@ -14,7 +14,7 @@ As the docs explain, there are different ways of accessing the powerwall
 data:
 1. _Direct:_ Direct access to your powerwall on your local network. This is not available
    for Powerwall 3s, and even then would require static routing to the fixed Powerwall
-   network (192.168.91).
+   network IP (192.168.91).
 2. _Fleet:_ Using the Tesla Fleet API. This apparently is for installers and reseller servicers,
    and requires you to create an account with Tesla. Supposedly it can be done,
    but requires some fiddling. The upside is that huge number of additional
@@ -71,3 +71,9 @@ The configuration file for _PowerwallToChords_ looks like:
 - `poll_secs`: Tesla is queried every `poll_secs`. (_pypowerwall_ docs say that data is 
 cached so that calls will not be made any more often than 5s).
 - `avg_count`: Number of values that are collected, averaged, and then sent to CHORDS.
+
+## Linux Service
+
+_linux/powerwalltochords.service_ provides a typical service
+definition. Note how it is using a venv to run a suitable
+version of python.
