@@ -65,13 +65,18 @@ class PW_Aggregator:
         while not pw_success:
             try:
                 # pw.grid() will make a request to Tesla
-                data_time = datetime.datetime.fromisoformat(self.pw.grid(verbose=True)['last_communication_time']).timestamp()
-                # pw.power() will make a request to Tesla
-                power = self.pw.power()
-                pw_success = True
+                last_comm_time = self.pw.grid(verbose=True)['last_communication_time']).timestamp()
+                if last_comm_time:
+                    data_time = datetime.datetime.fromisoformat(last_comm_time).timestamp()
+                    # pw.power() will make a request to Tesla
+                    power = self.pw.power()
+                    if power:
+                        pw_success = True
             except Exception as e:
+                print('Exception during Tesla API access')
                 print(e)
-                data_time.sleep(6)
+            if not pw_success:
+                time.sleep(6)
                 print('Retrying Tesla access')
 
         self.time_aggregator.add(time=data_time, value=data_time)
