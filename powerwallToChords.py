@@ -159,11 +159,11 @@ def main(config_file:dict)->None:
             at = str(datetime.datetime.fromtimestamp(t, zoneinfo.ZoneInfo(timezone))).replace(' ','T')
             vars = {}
             vars['at'] = at
-            vars['grid'] = averaged_values['grid']
-            vars['solar'] = averaged_values['solar']
-            vars['battery'] = averaged_values['battery']
-            vars['load'] = averaged_values['load']
-            vars['level'] = averaged_values['level']
+            vars['grid'] = round(averaged_values['grid'],2)
+            vars['solar'] = round(averaged_values['solar'],2)
+            vars['battery'] = round(averaged_values['battery'],2)
+            vars['load'] = round(averaged_values['load'],2)
+            vars['level'] = round(averaged_values['level'],2)
             #print(vars)
 
             chords_record = {}
