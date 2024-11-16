@@ -65,9 +65,9 @@ class PW_Aggregator:
         while not pw_success:
             try:
                 # pw.grid() will make a request to Tesla
-                last_comm_time = self.pw.grid(verbose=True)['last_communication_time']).timestamp()
-                if last_comm_time:
-                    data_time = datetime.datetime.fromisoformat(last_comm_time).timestamp()
+                grid = self.pw.grid(verbose=True)
+                if grid:
+                    data_time = datetime.datetime.fromisoformat(grid['last_communication_time']).timestamp()
                     # pw.power() will make a request to Tesla
                     power = self.pw.power()
                     if power:
